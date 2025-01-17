@@ -1,12 +1,12 @@
 import React from 'react';
-import { 
-  Container, 
-  Typography, 
-  Card, 
-  CardContent, 
-  Grid,
+import {
+  Container,
+  Typography,
+  Card,
+  CardContent,
   Stack,
-  Divider
+  Divider,
+  Grid2
 } from '@mui/material';
 import {
   Description,
@@ -28,29 +28,29 @@ const mockData = {
   d_90: 8,
   d_mas: 265,
   subclasificaciones: [
-      { nombre: "INTERCAMBIO", cantidad: 90 },
-      { nombre: "DOBLE TÍTULO", cantidad: 15 },
-      { nombre: "COLABORACIÓN INVESTIGATIVA", cantidad: 17 },
-      { nombre: "COLABORACIÓN DOCTORAL", cantidad: 17 },
-      { nombre: "OTROS", cantidad: 24 },
-      { nombre: "CURSO CORTO", cantidad: 24 },
-      { nombre: "PASANTIA", cantidad: 10 },
-      { nombre: "VIA DE TITULACIÓN", cantidad: 2 },
-      { nombre: "COTUTELA DE TESIS", cantidad: 4 },
-      { nombre: "CERTIFICADO INTERNACIONAL", cantidad: 6 },
+    { nombre: "INTERCAMBIO", cantidad: 90 },
+    { nombre: "DOBLE TÍTULO", cantidad: 15 },
+    { nombre: "COLABORACIÓN INVESTIGATIVA", cantidad: 17 },
+    { nombre: "COLABORACIÓN DOCTORAL", cantidad: 17 },
+    { nombre: "OTROS", cantidad: 24 },
+    { nombre: "CURSO CORTO", cantidad: 24 },
+    { nombre: "PASANTIA", cantidad: 10 },
+    { nombre: "VIA DE TITULACIÓN", cantidad: 2 },
+    { nombre: "COTUTELA DE TESIS", cantidad: 4 },
+    { nombre: "CERTIFICADO INTERNACIONAL", cantidad: 6 },
   ],
   niveles: [
-      { nombre: "PREGRADO", cantidad: 329 },
-      { nombre: "POSTGRADO", cantidad: 282 },
-      { nombre: "MAGISTER", cantidad: 229 },
-      { nombre: "DOCTORADO", cantidad: 234 },
-      { nombre: "CENTROS E INSTITUTOS", cantidad: 0 },
+    { nombre: "PREGRADO", cantidad: 329 },
+    { nombre: "POSTGRADO", cantidad: 282 },
+    { nombre: "MAGISTER", cantidad: 229 },
+    { nombre: "DOCTORADO", cantidad: 234 },
+    { nombre: "CENTROS E INSTITUTOS", cantidad: 0 },
   ],
   cantidadPaises: 41,
   tipos: [
-      { nombre: "Marco", cantidad: 141 },
-      { nombre: "MOU", cantidad: 16 },
-      { nombre: "Especifico", cantidad: 134 },
+    { nombre: "Marco", cantidad: 141 },
+    { nombre: "MOU", cantidad: 16 },
+    { nombre: "Especifico", cantidad: 134 },
   ],
   cantidad_qs: 9,
   cantidad_consorcios: 3
@@ -75,22 +75,24 @@ function MetricsCards({ data }) {
     { label: 'Vencidos', value: vencidos },
   ];
 
-  const otherCards = [
+  const otherStats = [
     { label: 'Países', value: cantidadPaises, icon: <Public /> },
     { label: 'Top 300 QS', value: cantidad_qs, icon: <School /> },
     { label: 'Consorcios', value: cantidad_consorcios, icon: <Groups /> },
   ];
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12} sm={12}>
-        <Card variant="outlined">
+    <Grid2 container spacing={1}>
+      <Grid2 item xs={12} sm={12}>
+        <>
           <CardContent>
             <Stack direction="row" alignItems="center" spacing={1} mb={2}>
               <Description />
               <Typography variant="h6">Convenios</Typography>
             </Stack>
-            <Stack direction="row" spacing={2} divider={<Divider orientation="vertical" flexItem />}>
+            <Divider sx={{ marginY: 2 }} />
+
+            <Stack direction="column" divider={<Divider orientation="vertical" flexItem />}>
               {statsCard.map((item) => (
                 <Stack key={item.label} alignItems="center">
                   <Typography variant="subtitle1">{item.label}</Typography>
@@ -100,25 +102,23 @@ function MetricsCards({ data }) {
                 </Stack>
               ))}
             </Stack>
+            <Divider sx={{ marginY: 2 }} />
+            <Stack direction="row" spacing={2} divider={<Divider orientation="vertical" flexItem />}>
+              {otherStats.map((item) => (
+                <Stack key={item.label} direction="row" alignItems="center" spacing={2}>
+                  {item.icon}
+                  <Typography variant="subtitle1">{item.label}</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', marginLeft: 'auto' }}>
+                    {item.value}
+                  </Typography>
+                </Stack>
+              ))}
+            </Stack>
           </CardContent>
-        </Card>
-      </Grid>
-      {otherCards.map((item) => (
-        <Grid item xs={4} sm={4} key={item.label}>
-          <Card variant="outlined">
-            <CardContent>
-              <Stack direction="row" alignItems="center" spacing={1}>
-                {item.icon}
-                <Typography variant="subtitle1">{item.label}</Typography>
-              </Stack>
-              <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                {item.value}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
+        </>
+      </Grid2>
+
+    </Grid2>
   );
 }
 
@@ -152,7 +152,7 @@ function VencidosChart({ data }) {
     ],
   };
 
-  return <ReactECharts option={options} style={{ height: '400px' }} />;
+  return <ReactECharts option={options} style={{ height: '100%', marginTop: '20px' }} />;
 }
 
 /**
@@ -172,28 +172,24 @@ function SubclasificacionesChart({ subclasificaciones }) {
     tooltip: {
       trigger: 'item',
     },
-    legend: {
-      orient: 'horizontal',
-      bottom: '0',
-    },
     series: [
       {
-        name: 'Cantidad',
-        type: 'pie',
-        radius: '50%',
+        type: 'treemap', // Changed from 'sunburst' to 'treemap'
         data: chartData,
-        emphasis: {
-          itemStyle: {
-            shadowBlur: 10,
-            shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)',
-          },
+        label: {
+          show: true,
+          formatter: '{b}: {c}',
         },
+        upperLabel: {
+          show: true,
+          height: 30,
+        },
+        roam: false,
       },
     ],
   };
 
-  return <ReactECharts option={options} style={{ height: '400px' }} />;
+  return <ReactECharts option={options} style={{ height: '600px' }} />;
 }
 
 /**
@@ -276,29 +272,47 @@ function TiposChart({ tipos }) {
  */
 function Dashboard({ data }) {
   return (
-    <Container maxWidth="lg" sx={{ paddingY: 4 }}>
+    <Container maxWidth="xl" sx={{ paddingY: 4 }} >
 
 
       {/* Sección de tarjetas principales */}
-      <MetricsCards data={data} />
 
-      <Grid container spacing={2} sx={{ marginTop: 2 }}>
-        <Grid item xs={12} md={8}>
-          <VencidosChart data={data} />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <TiposChart tipos={data.tipos} />
-        </Grid>
-      </Grid>
 
-      <Grid container spacing={2} sx={{ marginTop: 2 }}>
-        <Grid item xs={12} md={12}>
-          <SubclasificacionesChart subclasificaciones={data.subclasificaciones} />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <NivelesChart niveles={data.niveles} />
-        </Grid>
-      </Grid>
+      <Card variant="outlined"  >
+        <Grid2 container >
+          <Grid2 size={4}>
+            <MetricsCards data={data} />
+          </Grid2>
+          <Grid2 container ></Grid2>
+          <Grid2 size={8}>
+            <VencidosChart data={data} />
+          </Grid2>
+        </Grid2>
+      </Card>
+
+      <Grid2 container style={{ marginTop: '10px' }} spacing={2}>
+
+        <Grid2 size={12}>
+          <Card variant='outlined' style={{ padding: '40px' }} >
+            <TiposChart tipos={data.tipos} />
+          </Card>
+        </Grid2>
+
+        <Grid2 size={12}>
+          <Card variant='outlined' style={{ padding: '40px' }} >
+            <SubclasificacionesChart subclasificaciones={data.subclasificaciones} />
+          </Card>
+        </Grid2>
+
+        <Grid2 size={12}>
+          <Card variant='outlined' style={{ padding: '40px' }} >
+                  <NivelesChart niveles={data.niveles} />
+          </Card>
+        </Grid2>
+      </Grid2>
+
+
+
     </Container>
   );
 }
